@@ -1,5 +1,8 @@
 apply plugin: 'com.android.library'
 
+group "com.mikepenz"
+version "2.9.3"
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -7,8 +10,8 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 251
-        versionName "2.5.1"
+        versionCode 3000
+        versionName "3.0.0"
     }
     buildTypes {
         release {
@@ -22,8 +25,10 @@ android {
 }
 if (project.hasProperty('pushall') || project.hasProperty('librarycoreonly')) {
     apply from: '../gradle-mvn-push.gradle'
+    apply plugin: 'com.novoda.bintray-release'
+    apply from: '../gradle-jcenter-push.gradle'
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:23.1.1'
+    implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
 }

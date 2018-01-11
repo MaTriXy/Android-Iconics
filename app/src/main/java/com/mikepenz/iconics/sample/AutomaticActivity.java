@@ -22,7 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
-import com.mikepenz.iconics.context.IconicsLayoutInflater;
+import com.mikepenz.iconics.context.IconicsLayoutInflater2;
 
 
 public class AutomaticActivity extends AppCompatActivity {
@@ -30,14 +30,14 @@ public class AutomaticActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         //define the IconicsLayoutInflater
         //this is compatible with calligraphy and other libs which wrap the baseContext
-        LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
+        LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
 
         //call super.onCreate
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_automatic);
 
         // Handle Toolbar
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 

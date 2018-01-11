@@ -2,33 +2,27 @@
 
 buildscript {
     repositories {
+        google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.0.0-alpha2'
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.novoda:bintray-release:0.7.0'
     }
 }
-// To avoid manually setting the same values in all Android modules, set the value on the root
-// project and then reference this from the modules
-ext {
-    compileSdkVersion = 23
-    buildToolsVersion = "23.0.2"
 
-    minSdkVersion = 10
-    targetSdkVersion = 23
+ext {
+    compileSdkVersion = 27
+    buildToolsVersion = "27.0.1"
+    supportLibVersion = "27.0.1"
+    minSdkVersion = 14
+    targetSdkVersion = 27
 }
 
 allprojects {
     repositories {
+        google()
         jcenter()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
-}
-
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.9'
 }

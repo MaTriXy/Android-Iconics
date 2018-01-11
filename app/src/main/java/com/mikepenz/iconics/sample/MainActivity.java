@@ -18,7 +18,6 @@ package com.mikepenz.iconics.sample;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -37,11 +36,14 @@ import com.mikepenz.iconics.Iconics;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.typeface.IIcon;
 import com.mikepenz.iconics.typeface.ITypeface;
+import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.holder.BadgeStyle;
+import com.mikepenz.materialdrawer.holder.StringHolder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.util.KeyboardUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,7 +57,11 @@ public class MainActivity extends AppCompatActivity {
 
     private IconsFragment mIconsFragment;
     private boolean mRandomize;
+    private boolean mShadow;
     private List<ITypeface> mFonts;
+    private int mIdentifierGmd = 0;
+    private String mCurrentSearch = null;
+    private Drawer mDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Handle Toolbar
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
@@ -78,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
         //add all icons of all registered Fonts to the list
         ArrayList<IDrawerItem> items = new ArrayList<>(Iconics.getRegisteredFonts(this).size());
+        int count = 0;
         for (ITypeface font : mFonts) {
             PrimaryDrawerItem pdi = new PrimaryDrawerItem()
                     .withName(font.getFontName())
@@ -88,14 +95,17 @@ public class MainActivity extends AppCompatActivity {
                     )
                     .withIcon(
                             getRandomIcon(font)
-                    );
+                    )
+                    .withIdentifier(count);
+
             if (font.getMappingPrefix().equals("gmd")) {
-                pdi.withIdentifier(1);
+                mIdentifierGmd = count;
             }
             items.add(pdi);
+            count++;
         }
 
-        new DrawerBuilder().withActivity(this)
+        mDrawer = new DrawerBuilder().withActivity(this)
                 .withToolbar(toolbar)
                 .withDrawerItems(items)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -107,8 +117,22 @@ public class MainActivity extends AppCompatActivity {
                         return false;
                     }
                 })
+                .withOnDrawerListener(new Drawer.OnDrawerListener() {
+                    @Override
+                    public void onDrawerOpened(View drawerView) {
+                        KeyboardUtil.hideKeyboard(MainActivity.this);
+                    }
+
+                    @Override
+                    public void onDrawerClosed(View drawerView) {
+                    }
+
+                    @Override
+                    public void onDrawerSlide(View drawerView, float slideOffset) {
+                    }
+                })
                 .withFireOnInitialOnClick(true)
-                .withSelectedItem(1)
+                .withSelectedItem(mIdentifierGmd)
                 .build();
     }
 
@@ -118,31 +142,54 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            final SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        //
+        menu.findItem(R.id.search).setIcon(
+                new IconicsDrawable(this, MaterialDesignIconic.Icon.gmi_search)
+                        .color(Color.WHITE)
+                        .sizeDp(24)
+                        .respectFontBounds(true));
 
-                @Override
-                public boolean onQueryTextSubmit(String s) {
-                    search(s);
-                    return true;
+        final SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                search(s);
+                return true;
+            }
+
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                search(s);
+                return true;
+            }
+
+
+            private void search(String s) {
+                mCurrentSearch = s;
+
+                if (mDrawer != null) {
+                    int count = 0;
+                    for (ITypeface font : mFonts) {
+                        int foundCount = 0;
+                        if (font.getIcons() != null) {
+                            for (String icon : font.getIcons()) {
+                                if (icon.toLowerCase().contains(s.toLowerCase())) {
+                                    foundCount++;
+                                }
+                            }
+                        }
+                        mDrawer.updateBadge(count, new StringHolder(foundCount + ""));
+
+                        count++;
+                    }
                 }
 
-
-                @Override
-                public boolean onQueryTextChange(String s) {
-                    search(s);
-                    return true;
-                }
-
-
-                private void search(String s) {
-                    if (mIconsFragment != null) mIconsFragment.onSearch(s);
-                }
-            });
-        } else {
-            menu.findItem(R.id.search).setVisible(false);
-        }
+                //filter out the current fragment
+                if (mIconsFragment != null) mIconsFragment.onSearch(s);
+            }
+        });
 
         MenuItem menuItem = menu.findItem(R.id.action_opensource);
         menuItem.setIcon(new IconicsDrawable(this, FontAwesome.Icon.faw_github).actionBar().color(Color.WHITE));
@@ -166,6 +213,11 @@ public class MainActivity extends AppCompatActivity {
                 item.setChecked(!item.isChecked());
                 mIconsFragment.randomize(item.isChecked());
                 mRandomize = item.isChecked();
+                return true;
+            case R.id.action_shadow:
+                item.setChecked(!item.isChecked());
+                mIconsFragment.shadow(item.isChecked());
+                mShadow = item.isChecked();
                 return true;
             case R.id.action_opensource:
                 new LibsBuilder()
@@ -196,6 +248,8 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         mIconsFragment = IconsFragment.newInstance(fontName);
         mIconsFragment.randomize(mRandomize);
+        mIconsFragment.shadow(mShadow);
+        mIconsFragment.onSearch(mCurrentSearch);
         ft.replace(R.id.content, mIconsFragment);
         ft.commit();
     }

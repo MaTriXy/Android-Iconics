@@ -16,6 +16,8 @@
 
 apply plugin: 'com.android.library'
 
+group "com.mikepenz"
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -24,8 +26,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         consumerProguardFiles 'consumer-proguard-rules.pro'
-        versionCode 21001
-        versionName "2.1.0.1.original"
+        versionCode 30012
+        versionName "3.0.1.2.original"
     }
     buildTypes {
         release {
@@ -33,11 +35,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 if (project.hasProperty('pushall') || project.hasProperty('googlematerialonly')) {
     apply from: '../gradle-mvn-push.gradle'
+    apply plugin: 'com.novoda.bintray-release'
+    apply from: '../gradle-jcenter-push.gradle'
 }
 
 dependencies {
-    compile project(':library-core')
+    implementation project(':library-core')
 }

@@ -1,6 +1,19 @@
-##Upgrade Notes
+## Upgrade Notes
 
 ### Library
+
+#### 2.9.5
+* the attributes for the `IconicsMenuInflaterUtil` start now with `ico_` instead of `iiv_`
+* the `IconicsMenuInflaterUtil` was moved into the `core` module to simplify code
+
+#### 2.9.0
+* The library-core was split apart into **iconics-core** and **iconics-views** to slim down the **iconics-core** and allow more advanced UI features in the **iconics-views**
+* the core dep stays the same: `compile "com.mikepenz:iconics-core:2.9.0@aar"`
+* for all UI widgets add `compile "com.mikepenz:iconics-views:2.9.0@aar"`
+
+#### 2.8.0
+* Dropping support for API < 14. New `MinSdkVersion` is now 14
+
 #### 2.x.y -> 2.5.0
 * there is now a new prefered solution to enable the Iconics features on Android base views like ImageViews, TextViews or all views which extend those.
  * instead of wrapping the `baseContext` you should now define the `IconicsLayoutInflater` as default `LayoutInflater`. This will also bring [Calligraphy](https://github.com/chrisjenx/Calligraphy) compatiblity (or to other libs which wrap the `baseContext`)
@@ -32,9 +45,12 @@ protected void attachBaseContext(Context newBase) {
 
 ### Font Addons
 #### Google Material font v2.1.0.1.original
-* is now the default Google Material icon set again with the "gmd" mapping
+* **NOTE:** Google's font has a bad baseline so icons are not centered within text. Drawables look fine. Use Material Design Iconic as alternative if this is an issue for you
+* is now the default Google Material icon set again with the "**gmd**" mapping
+* package name `com.mikepenz.google_material_typeface_library.GoogleMaterial`
 #### Material Design Iconic v2.2.0.1
-* is now the standalone Material Design Iconic icon pack with the "gmi" mapping
+* is now the standalone Material Design Iconic icon pack with the "**gmi**" mapping
+* package name `com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic`
 
 #### Google Material font 1.2.0.1 --> 2.1.2.1
 * the mapping of some icons changed

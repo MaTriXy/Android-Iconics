@@ -1,5 +1,7 @@
 apply plugin: 'com.android.library'
 
+group "com.mikepenz"
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -8,8 +10,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         consumerProguardFiles 'consumer-proguard-rules.pro'
-        versionCode 45001
-        versionName "4.5.0.1"
+        versionCode 47002
+        versionName "4.7.0.2"
     }
     buildTypes {
         release {
@@ -20,11 +22,17 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 if (project.hasProperty('pushall') || project.hasProperty('fontawesomeonly')) {
     apply from: '../gradle-mvn-push.gradle'
+    apply plugin: 'com.novoda.bintray-release'
+    apply from: '../gradle-jcenter-push.gradle'
 }
 
 dependencies {
-    compile project(':library-core')
+    implementation project(':library-core')
 }
