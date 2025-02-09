@@ -11,8 +11,8 @@
 # Generated files
 bin/
 gen/
-.idea/*
 *.iml
+.idea/*
 
 # Gradle files
 .gradle/
@@ -28,3 +28,6 @@ proguard/
 # Log Files
 *.log
 functiongraphic.psd
+
+vendor/*
+.kotlin
